@@ -3,13 +3,10 @@
 import type React from "react"
 import { useState } from "react"
 import { FiUser, FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi"
+import { Link } from "react-router-dom"
 
-interface SignupFormProps {
-  onSubmit?: (userData: { fullName: string; emailOrPhone: string; password: string }) => void
-  onSwitchToLogin?: () => void
-}
 
-const SignupForm: React.FC<SignupFormProps> = ({ onSubmit, onSwitchToLogin }) => {
+const SignupForm: React.FC = () => {
   const [fullName, setFullName] = useState("")
   const [emailOrPhone, setEmailOrPhone] = useState("")
   const [password, setPassword] = useState("")
@@ -48,16 +45,10 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit, onSwitchToLogin }) =>
     if (!validateForm()) return
 
     setIsLoading(true)
-
-    // Simulate API call
-    setTimeout(() => {
-      onSubmit?.({ fullName, emailOrPhone, password })
-      setIsLoading(false)
-    }, 1000)
   }
 
   return (
-    <div className="w-full max-w-md mx-auto bg-transparent rounded-lg  p-8">
+    <div className="w-full max-w-md mx-auto bg-transparent rounded-lg">
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-gray-900">Create Account</h2>
         <p className="text-gray-600 mt-2">Join our learning platform</p>
@@ -138,9 +129,9 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit, onSwitchToLogin }) =>
               className="absolute inset-y-0 right-0 pr-3 flex items-center"
             >
               {showPassword ? (
-                <FiEyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+              <FiEye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
               ) : (
-                <FiEye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                <FiEyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
               )}
             </button>
           </div>
@@ -173,9 +164,9 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit, onSwitchToLogin }) =>
               className="absolute inset-y-0 right-0 pr-3 flex items-center"
             >
               {showConfirmPassword ? (
-                <FiEyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-              ) : (
                 <FiEye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+              ) : (
+                <FiEyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
               )}
             </button>
           </div>
@@ -209,13 +200,13 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit, onSwitchToLogin }) =>
       </form>
 
       {/* Switch to Login */}
-      <div className="mt-6 text-center flex items-center ">
+      <div className="mt-4 text-center">
         <p className="">
-          Already have an account?{" "}
-        </p>
-          <button className="text-green-300 hover:text-green-500 font-bold">
+          Already have an account?{"   "}
+          <Link to={"/auth/login"} className="ml-2 text-blue-700 font-bold underline cursor-pointer">
             Login here
-          </button>
+          </Link>
+        </p>
       </div>
     </div>
   )

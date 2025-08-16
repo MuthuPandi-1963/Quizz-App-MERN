@@ -4,9 +4,9 @@ import Footer from "../../common/Footer";
 
 export default function StaffLayout() {
   return (
-    <div className="min-h-full flex">
+    <div className="min-h-full flex flex-col">
         <StaffNavbar />
-        <div className="flex-1"><Outlet/></div>
+        <div className="flex-1 min-h-screen"><Outlet/></div>
         <Footer/>
     </div>
   )

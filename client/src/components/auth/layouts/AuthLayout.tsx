@@ -1,6 +1,5 @@
 import { FiArrowLeft } from "react-icons/fi"
 import { Outlet } from "react-router-dom"
-import Footer from "../../common/Footer"
 
 
 
@@ -9,7 +8,7 @@ export default function AuthLayout() {
     <div className="min-h-full   flex">
       {/* Left Side - Image Section */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 to-blue-600"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 to-green-600"></div>
         <div className="relative z-10 flex flex-col justify-center items-center p-12 text-white">
           <div className=" text-center grid justify-center">
             <img
@@ -30,13 +29,13 @@ export default function AuthLayout() {
       </div>
 
       {/* Right Side - Form Section */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center px-6 py-6">
-        <div className="bg-white rounded-2xl border p-4 max-w-md mx-auto w-full">
+      <div className="w-full lg:w-1/2 flex flex-col justify-center px-6 py-6 border-black ">
+        <div className="bg-white rounded-2xl  p-4 max-w-md mx-auto w-full ring-1 ring-green-500">
             <button
-              className="flex items-center text-gray-600 hover:text-emerald-600 mb-8 transition-colors duration-200"
+              className="flex items-center text-gray-600 cursor-pointer hover:bg-green-200 px-4 py-1 hover:text-emerald-600 mb-8 transition-colors duration-200"
             >
-              <FiArrowLeft className="mr-2" />
-              Back
+              <FiArrowLeft className="mr-2 text-blue-500" />
+              <span className="text-blue-500 font-bold">Back</span>
             </button>
 
           {/* Form Content */}

@@ -1,13 +1,10 @@
 import type React from "react"
 import { useState } from "react"
 import { FiUser, FiLock, FiEye, FiEyeOff } from "react-icons/fi"
+import { Link } from "react-router-dom";
 
-interface LoginFormProps {
-  onSubmit?: (credentials: { identifier: string; password: string }) => void
-  onSwitchToSignup?: () => void
-}
 
-const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, onSwitchToSignup }) => {
+const LoginForm: React.FC = () => {
   const [identifier, setIdentifier] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -17,11 +14,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, onSwitchToSignup }) => 
     e.preventDefault()
     setIsLoading(true)
 
-    // Simulate API call
-    setTimeout(() => {
-      onSubmit?.({ identifier, password })
-      setIsLoading(false)
-    }, 1000)
   }
 
   return (
@@ -77,9 +69,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, onSwitchToSignup }) => 
               className="absolute inset-y-0 right-0 pr-3 flex items-center"
             >
               {showPassword ? (
-                <FiEyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-              ) : (
                 <FiEye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+              ) : (
+                <FiEyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
               )}
             </button>
           </div>
@@ -106,7 +98,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, onSwitchToSignup }) => 
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium"
+          className={`w-full rounded-xl my-3 text-amber-100 bg-blue-600 py-3 cursor-pointer ${isLoading && 'cursor-not-allowed'}`}
         >
           {isLoading ? "Signing in..." : "Sign In"}
         </button>
@@ -116,9 +108,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, onSwitchToSignup }) => 
       <div className="mt-6 text-center">
         <p className="text-gray-600">
           Don't have an account?{" "}
-          <button onClick={onSwitchToSignup} className="text-blue-600 hover:text-blue-500 font-medium">
-            Sign up here
-          </button>
+          <Link to={"/auth/signup"} className="ml-2 text-green-700 font-bold underline cursor-pointer">
+            Sign Up here
+          </Link>
         </p>
       </div>
     </div>

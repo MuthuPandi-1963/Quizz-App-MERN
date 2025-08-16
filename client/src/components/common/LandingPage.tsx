@@ -47,20 +47,20 @@ export default function LandingPage() {
       role: "Computer Science Student",
       content:
         "This platform transformed my learning experience. The coding challenges are engaging and the feedback is incredibly helpful.",
-      avatar: "/student-avatar-1.png",
+      avatar: "profile-user.png",
     },
     {
       name: "Dr. Michael Chen",
       role: "Professor, MIT",
       content:
         "As an educator, I appreciate the detailed analytics and how it helps me understand my students' progress better.",
-      avatar: "/professor-avatar-1.png",
+      avatar: "profile-user.png",
     },
     {
       name: "Alex Rodriguez",
       role: "Software Developer",
       content: "The skills I developed here directly contributed to landing my dream job. Highly recommended!",
-      avatar: "/developer-avatar-1.png",
+      avatar: "profile-user.png",
     },
   ]
 
@@ -74,7 +74,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-full bg-background">
       {/* Hero Section */}
-      <section className="relative md:pt-40 pt-28  pb-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+      <section className="relative md:pt-20 pt-28  pb-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
@@ -153,7 +153,7 @@ export default function LandingPage() {
               <div key={index} className="bg-card p-8 rounded-xl shadow-sm border border-border">
                 <div className="flex items-center mb-6">
                   <img
-                    src={testimonial.avatar || "./developer-avatar-1.png"}
+                    src={testimonial.avatar || "./profile-user.png"}
                     alt={testimonial.name}
                     className="w-12 h-12 rounded-full mr-4"
                   />
