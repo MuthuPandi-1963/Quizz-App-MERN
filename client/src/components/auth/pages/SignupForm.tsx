@@ -1,51 +1,55 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
-import { FiUser, FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi"
-import { Link } from "react-router-dom"
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { validateConfirmPassword, validateEmailOrPhone, validateFullName, ValidateIsEmail, ValidateIsPhone, validatePassword } from "../../../utils/Validator";
+import TextInput from "../../../utils/form/TextInput";
+import PasswordInput from "../../../utils/form/PasswordInput";
+import Checkbox from "../../../utils/form/CheckBox";
+import { SignupThunk } from "../../../store/thunks/auth/SignupThunk";
+import type { signupDataType } from "../../interfaces/auth";
+import { useAppDispatch } from "../../interfaces/hook";
+
 
 
 const SignupForm: React.FC = () => {
-  const [fullName, setFullName] = useState("")
-  const [emailOrPhone, setEmailOrPhone] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [errors, setErrors] = useState<{ [key: string]: string }>({})
+  const dispatch = useAppDispatch();
+  const [fullName, setFullName] = useState("");
+  const [emailOrPhone, setEmailOrPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const validateForm = () => {
-    const newErrors: { [key: string]: string } = {}
-
-    if (fullName.trim().length < 2) {
-      newErrors.fullName = "Full name must be at least 2 characters"
-    }
-
-    if (!emailOrPhone.trim()) {
-      newErrors.emailOrPhone = "Email or phone is required"
-    }
-
-    if (password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters"
-    }
-
-    if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match"
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    const newErrors: { [key: string]: string } = {};
+    if (validateFullName(fullName)) newErrors.fullName = validateFullName(fullName)!;
+    if (validateEmailOrPhone(emailOrPhone)) newErrors.emailOrPhone = validateEmailOrPhone(emailOrPhone)!;
+    if (validatePassword(password)) newErrors.password = validatePassword(password)!;
+    if (validateConfirmPassword(password, confirmPassword))
+      newErrors.confirmPassword = validateConfirmPassword(password, confirmPassword)!;
+    return newErrors;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!validateForm()) return
-
-    setIsLoading(true)
-  }
+    e.preventDefault();
+    const validationErrors = validateForm();
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
+    try {
+      setIsLoading(true);
+      
+      const SignupData :signupDataType = {full_name:fullName,password}
+      if(ValidateIsEmail(emailOrPhone)) SignupData.email = emailOrPhone
+      if(ValidateIsPhone(emailOrPhone)) SignupData.phone = emailOrPhone
+      console.log(SignupData);
+      const response = await dispatch(SignupThunk(SignupData));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="w-full max-w-md mx-auto bg-transparent rounded-lg">
@@ -54,162 +58,79 @@ const SignupForm: React.FC = () => {
         <p className="text-gray-600 mt-2">Join our learning platform</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Full Name Field */}
-        <div>
-          <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
-            Full Name
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <FiUser className="h-5 w-5 text-gray-400" />
-            </div>
-            <input
-              id="fullName"
-              type="text"
-              required
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all ${
-                errors.fullName ? "border-red-500" : "border-gray-300"
-              }`}
-              placeholder="Enter your full name"
-            />
-          </div>
-          {errors.fullName && <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>}
-        </div>
+      <form onSubmit={handleSubmit} className="md:space-y-6 space-y-2">
+        <TextInput
+          id="fullName"
+          label="Full Name"
+          icon="user"
+          value={fullName}
+          onChange={setFullName}
+          error={errors.fullName}
+          placeholder="Enter your full name"
+          autoComplete="name"
+        />
 
-        {/* Email or Phone Field */}
-        <div>
-          <label htmlFor="emailOrPhone" className="block text-sm font-medium text-gray-700 mb-2">
-            Email or Phone
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <FiMail className="h-5 w-5 text-gray-400" />
-            </div>
-            <input
-              id="emailOrPhone"
-              type="text"
-              required
-              value={emailOrPhone}
-              onChange={(e) => setEmailOrPhone(e.target.value)}
-              className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all ${
-                errors.emailOrPhone ? "border-red-500" : "border-gray-300"
-              }`}
-              placeholder="Enter email or phone number"
-            />
-          </div>
-          {errors.emailOrPhone && <p className="mt-1 text-sm text-red-600">{errors.emailOrPhone}</p>}
-        </div>
+        <TextInput
+          id="emailOrPhone"
+          label="Email or Phone"
+          icon="mail"
+          value={emailOrPhone}
+          onChange={setEmailOrPhone}
+          error={errors.emailOrPhone}
+          placeholder="Enter email or phone number"
+          autoComplete="email"
+        />
 
-        {/* Password Field */}
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-            Password
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <FiLock className="h-5 w-5 text-gray-400" />
-            </div>
-            <input
-              id="password"
-              type={showPassword ? "text" : "password"}
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all ${
-                errors.password ? "border-red-500" : "border-gray-300"
-              }`}
-              placeholder="Create a password"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center"
-            >
-              {showPassword ? (
-              <FiEye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-              ) : (
-                <FiEyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-              )}
-            </button>
-          </div>
-          {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
-        </div>
+        <PasswordInput
+          id="password"
+          label="Password"
+          value={password}
+          onChange={setPassword}
+          error={errors.password}
+          placeholder="Create a password"
+          withRules
+        />
 
-        {/* Confirm Password Field */}
-        <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-            Confirm Password
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <FiLock className="h-5 w-5 text-gray-400" />
-            </div>
-            <input
-              id="confirmPassword"
-              type={showConfirmPassword ? "text" : "password"}
-              required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all ${
-                errors.confirmPassword ? "border-red-500" : "border-gray-300"
-              }`}
-              placeholder="Confirm your password"
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center"
-            >
-              {showConfirmPassword ? (
-                <FiEye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-              ) : (
-                <FiEyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-              )}
-            </button>
-          </div>
-          {errors.confirmPassword && <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>}
-        </div>
+        <PasswordInput
+          id="confirmPassword"
+          label="Confirm Password"
+          value={confirmPassword}
+          onChange={setConfirmPassword}
+          error={errors.confirmPassword}
+          placeholder="Confirm your password"
+        />
 
-        {/* Terms and Conditions */}
-        <div className="flex items-center">
-          <input
-            id="terms"
-            type="checkbox"
-            required
-            className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-          />
-          <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
-            I agree to the{" "}
-            <a href="#" className="text-green-600 hover:text-green-500">
-              Terms and Conditions
-            </a>
-          </label>
-        </div>
+        <Checkbox
+          id="terms"
+          label={
+            <>
+              I agree to the{" "}
+              <a href="#" className="text-green-600 hover:text-green-500">
+                Terms and Conditions
+              </a>
+            </>
+          }
+        />
 
-        {/* Submit Button */}
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium"
+          className="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 transition-all font-medium"
         >
           {isLoading ? "Creating Account..." : "Create Account"}
         </button>
       </form>
 
-      {/* Switch to Login */}
       <div className="mt-4 text-center">
-        <p className="">
-          Already have an account?{"   "}
-          <Link to={"/auth/login"} className="ml-2 text-blue-700 font-bold underline cursor-pointer">
+        <p>
+          Already have an account?{" "}
+          <Link to={"/auth/login"} className="ml-2 text-blue-700 font-bold underline">
             Login here
           </Link>
         </p>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SignupForm
+export default SignupForm;
