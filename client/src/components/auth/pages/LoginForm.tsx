@@ -1,30 +1,88 @@
-import type React from "react"
-import { useState } from "react"
-import { FiUser, FiLock, FiEye, FiEyeOff } from "react-icons/fi"
+import type React from "react";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { FiUser, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
 import { Link } from "react-router-dom";
-
+import { validateEmailOrPhone, validatePassword, ValidateIsEmail, ValidateIsPhone, validateUsername } from "../../../utils/Validator";
+import { LoginThunk } from "../../../store/thunks/auth/LoginThunk";
+import type { LoginDataType } from "../../interfaces/auth";
 
 const LoginForm: React.FC = () => {
-  const [identifier, setIdentifier] = useState("")
-  const [password, setPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const dispatch = useDispatch();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+  const [identifier, setIdentifier] = useState(""); // username | email | phone
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
+const validateForm = () => {
+  const newErrors: { [key: string]: string } = {};
+
+  // Check if identifier is email
+  if (ValidateIsEmail(identifier)) {
+    const emailError = validateEmailOrPhone(identifier);
+    if (emailError) newErrors.identifier = emailError;
+  }
+  // Check if identifier is phone
+  else if (ValidateIsPhone(identifier)) {
+    const phoneError = validateEmailOrPhone(identifier);
+    if (phoneError) newErrors.identifier = phoneError;
+  }
+  // Otherwise treat it as username
+  else {
+    const usernameError = validateUsername(identifier);
+    if (usernameError) newErrors.identifier = usernameError;
   }
 
+  // Password validation
+  const passwordError = validatePassword(password);
+  if (passwordError) newErrors.password = passwordError;
+
+  return newErrors;
+};
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const validationErrors = validateForm();
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) return;
+
+    try {
+      setIsLoading(true);
+
+      const loginData: LoginDataType = { password };
+
+      if (ValidateIsEmail(identifier)) {
+        loginData.email = identifier;
+      } else if (ValidateIsPhone(identifier)) {
+        loginData.phone = identifier;
+      } else {
+        loginData.username = identifier;
+      }
+
+      console.log("LoginData:", loginData);
+
+      const response = await dispatch(LoginThunk(loginData) as any);
+      console.log(response.payload);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="w-full max-w-md mx-auto  rounded-lg  p-8">
+    <div className="w-full max-w-md mx-auto rounded-lg p-8">
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-gray-900">Welcome Back</h2>
         <p className="text-gray-600 mt-2">Sign in to your account</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Username/Email/Phone Field */}
+        {/* Identifier (username/email/phone) */}
         <div>
           <label htmlFor="identifier" className="block text-sm font-medium text-gray-700 mb-2">
             Username, Email or Phone
@@ -43,9 +101,10 @@ const LoginForm: React.FC = () => {
               placeholder="Enter username, email or phone"
             />
           </div>
+          {errors.identifier && <p className="text-red-500 text-sm mt-1">{errors.identifier}</p>}
         </div>
 
-        {/* Password Field */}
+        {/* Password */}
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
             Password
@@ -75,6 +134,7 @@ const LoginForm: React.FC = () => {
               )}
             </button>
           </div>
+          {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
         </div>
 
         {/* Remember Me & Forgot Password */}
@@ -94,11 +154,11 @@ const LoginForm: React.FC = () => {
           </a>
         </div>
 
-        {/* Submit Button */}
+        {/* Submit */}
         <button
           type="submit"
           disabled={isLoading}
-          className={`w-full rounded-xl my-3 text-amber-100 bg-blue-600 py-3 cursor-pointer ${isLoading && 'cursor-not-allowed'}`}
+          className={`w-full rounded-xl my-3 text-amber-100 bg-blue-600 py-3 cursor-pointer ${isLoading && "cursor-not-allowed"}`}
         >
           {isLoading ? "Signing in..." : "Sign In"}
         </button>
@@ -114,7 +174,7 @@ const LoginForm: React.FC = () => {
         </p>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default LoginForm;

@@ -1,31 +1,36 @@
 import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import { FiMail, FiRefreshCw } from "react-icons/fi"
-
-// interface OTPVerificationProps {
-//     onVerify: (otp: string) => void
-//     onResend: () => void
-//     email?: string
-//     phone?: string
-//     isLoading?: boolean
-// }
-
+import { useAppDispatch, useAppSelector } from "../../interfaces/hook"
+import { OTPThunk } from "../../../store/thunks/auth/OTPThunk"
+import type { OTPDataType } from "../../interfaces/auth"
 export default function OTPVerification() {
     const [otp, setOtp] = useState(["", "", "", "", "", ""])
     const [timeLeft, setTimeLeft] = useState(300) // 5 minutes
-    const inputRefs = useRef<(HTMLInputElement | null)[]>(new Array(6).fill(null));
-    const [isLoading, setIsLoading] = useState<boolean>(false)
-    const email = "pandi123";
-    const phone = ""
-    function onVerify(otp: string) {console.log(otp); setIsLoading((prev)=>!prev)}
-    function onResend() { }
+    const inputRefs = useRef<(HTMLInputElement | null)[]>(new Array(6).fill(null))
+    const dispatch = useAppDispatch()
+
+    const { isLoading, email, phone, id} = useAppSelector((state) => state.auth.data)  
+    // assume your auth slice has email, phone, isLoading
+
     useEffect(() => {
         const timer = setInterval(() => {
             setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0))
         }, 1000)
-
         return () => clearInterval(timer)
     }, [])
+
+    const onVerify = (otp: string) => {
+        const OTPData  : OTPDataType = {id,otp,email ,phone}
+        console.log(OTPData);
+        
+        dispatch(OTPThunk({ otp, email, phone ,id })) 
+    }
+
+    const onResend = () => {
+        // Optionally dispatch a resend thunk
+        console.log("Resend OTP triggered")
+    }
 
     const handleChange = (index: number, value: string) => {
         if (value.length > 1) return
@@ -34,12 +39,10 @@ export default function OTPVerification() {
         newOtp[index] = value
         setOtp(newOtp)
 
-        // Auto-focus next input
         if (value && index < 5) {
             inputRefs.current[index + 1]?.focus()
         }
 
-        // Auto-submit when all fields are filled
         if (newOtp.every((digit) => digit !== "") && !isLoading) {
             onVerify(newOtp.join(""))
         }
@@ -63,7 +66,6 @@ export default function OTPVerification() {
         }
 
         setOtp(newOtp)
-
         if (newOtp.every((digit) => digit !== "")) {
             onVerify(newOtp.join(""))
         }
@@ -76,49 +78,44 @@ export default function OTPVerification() {
     }
 
     return (
-        <div className="space-y-6  mt-10 p-8 rounded-xl">
-            {/* Info Section */}
+        <div className="space-y-6 mt-10 p-8 rounded-xl">
             <div className="text-center">
                 <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <FiMail className="w-8 h-8 text-emerald-600" />
                 </div>
                 <p className="text-gray-600">
-                    We've sent a verification code to <span className="font-semibold text-gray-900">{email || phone}</span>
+                    We've sent a verification code to{" "}
+                    <span className="font-semibold text-gray-900">{email || phone}</span>
                 </p>
             </div>
 
-            {/* OTP Input */}
-            <div className="space-y-4">
-                <div className="flex justify-center gap-x-2">
-                    {otp.map((digit, index) => (
-                        <input
-                            key={index}
-                            ref={(el) => {
-                                inputRefs.current[index] = el
-                            }}
-                            type="text"
-                            inputMode="numeric"
-                            maxLength={1}
-                            value={digit}
-                            onChange={(e) => handleChange(index, e.target.value)}
-                            onKeyDown={(e) => handleKeyDown(index, e)}
-                            onPaste={handlePaste}
-                            className="w-12 h-12 text-center text-xl font-semibold border-2 border-gray-300 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 focus:outline-none transition-all duration-200"
-                            disabled={isLoading}
-                        />
-                    ))}
-
-                </div>
-
-                {/* Timer */}
-                <div className="text-center">
-                    <p className="text-sm text-gray-500">
-                        Code expires in <span className="font-semibold text-emerald-600">{formatTime(timeLeft)}</span>
-                    </p>
-                </div>
+            {/* OTP Inputs */}
+            <div className="flex justify-center gap-x-2">
+                {otp.map((digit, index) => (
+                    <input
+                        key={index}
+                        ref={(el) =>{ (inputRefs.current[index] = el)}}
+                        type="text"
+                        inputMode="numeric"
+                        pattern="\d*"
+                        maxLength={1}
+                        value={digit}
+                        onChange={(e) => handleChange(index, e.target.value)}
+                        onKeyDown={(e) => handleKeyDown(index, e)}
+                        onPaste={handlePaste}
+                        className="w-12 h-12 text-center text-xl font-semibold border-2 border-gray-300 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 focus:outline-none transition-all duration-200"
+                        disabled={isLoading}
+                    />
+                ))}
             </div>
 
-            {/* Resend Section */}
+            <div className="text-center">
+                <p className="text-sm text-gray-500">
+                    Code expires in{" "}
+                    <span className="font-semibold text-emerald-600">{formatTime(timeLeft)}</span>
+                </p>
+            </div>
+
             <div className="text-center grid justify-items-center">
                 <p className="text-sm text-gray-600">Didn't receive the code?</p>
                 <button
@@ -131,7 +128,6 @@ export default function OTPVerification() {
                 </button>
             </div>
 
-            {/* Loading State */}
             {isLoading && (
                 <div className="text-center">
                     <div className="inline-flex items-center px-4 py-2 text-sm text-gray-600">

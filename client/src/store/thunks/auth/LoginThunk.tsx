@@ -1,11 +1,13 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosInstance } from "../../../utils/AxiosInstance";
-import type { SignupDataType } from "../../../components/interfaces/auth";
+import type { LoginDataType } from "../../../components/interfaces/auth";
 
-export const SignupThunk = createAsyncThunk("auth/signup",
-    async (formdata :SignupDataType ,{rejectWithValue})=>{
+
+
+export const LoginThunk = createAsyncThunk("auth/login",
+    async (formdata : LoginDataType ,{rejectWithValue})=>{
         try {
-            const response = await AxiosInstance.post("/auth/signup",formdata)
+            const response = await AxiosInstance.post("/auth/login",formdata)
             console.log(response.data);
             return response.data;
             

@@ -5,7 +5,7 @@ import StudentDashboard from "../students/pages/StudentDashboard";
 import StudentProfile from "../students/pages/StudentProfile";
 
 export const StudentRoutes = (
-    <Route path="/students" element={<StudentLayout/>}>
+    <Route path="/student" element={<StudentLayout/>}>
         <Route index element={<StudentHomePage/>}/>
         <Route path="dashboard" element={<StudentDashboard/>}/>
         <Route path="profile" element={<StudentProfile/>}/>

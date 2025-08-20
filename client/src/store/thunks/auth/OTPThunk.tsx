@@ -1,0 +1,26 @@
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { AxiosInstance } from "../../../utils/AxiosInstance";
+import type { OTPDataType } from "../../../components/interfaces/auth";
+
+
+
+export const OTPThunk = createAsyncThunk("auth/otp",
+    async (formdata : OTPDataType ,{rejectWithValue})=>{
+        try {
+            const response = await AxiosInstance.post("/auth/verify_otp",formdata)
+            console.log(response.data);
+            return response.data;
+            
+        }catch (error: any) {
+      if (error.response) {
+        return rejectWithValue({
+          status: error.response.status,
+          data: error.response?.data || {},
+          message: error.message,
+        }); // ✅ only serializable fields
+      }
+      return rejectWithValue({ message: error.message });
+    }
+  }
+
+)

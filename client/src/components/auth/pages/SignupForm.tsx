@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { validateConfirmPassword, validateEmailOrPhone, validateFullName, ValidateIsEmail, ValidateIsPhone, validatePassword } from "../../../utils/Validator";
 import TextInput from "../../../utils/form/TextInput";
 import PasswordInput from "../../../utils/form/PasswordInput";
 import Checkbox from "../../../utils/form/CheckBox";
 import { SignupThunk } from "../../../store/thunks/auth/SignupThunk";
-import type { signupDataType } from "../../interfaces/auth";
 import { useAppDispatch } from "../../interfaces/hook";
+import type { SignupDataType } from "../../interfaces/auth";
 
 
 
@@ -20,6 +20,7 @@ const SignupForm: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const navigate = useNavigate()
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -39,11 +40,18 @@ const SignupForm: React.FC = () => {
     try {
       setIsLoading(true);
       
-      const SignupData :signupDataType = {full_name:fullName,password}
+      const SignupData :SignupDataType = {full_name:fullName,password}
       if(ValidateIsEmail(emailOrPhone)) SignupData.email = emailOrPhone
       if(ValidateIsPhone(emailOrPhone)) SignupData.phone = emailOrPhone
       console.log(SignupData);
       const response = await dispatch(SignupThunk(SignupData));
+      console.log(response.payload);
+      if(response.payload.success){
+        console.log("hsdkfhdskfhk");
+        
+        navigate("/auth/otp")
+      }
+      
     } catch (err) {
       console.error(err);
     } finally {

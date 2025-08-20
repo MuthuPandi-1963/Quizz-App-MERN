@@ -76,3 +76,31 @@ export const ValidateIsPhone = (data : string):boolean =>{
   const phoneRegex = /^\+?\d{10,15}$/;
   return phoneRegex.test(data)
 }
+
+export function validateUsername(username: string): string | null {
+  if (!username.trim()) {
+    return "Username is required";
+  }
+
+  // ✅ Must not start with number
+  if (/^[0-9]/.test(username)) {
+    return "Username cannot start with a number";
+  }
+
+  // ✅ Allowed: letters, numbers, underscore, dot
+  const usernameRegex = /^[A-Za-z][A-Za-z0-9._]*$/;
+
+  if (!usernameRegex.test(username)) {
+    return "Username can only contain letters, numbers, underscores, and dots";
+  }
+
+  // ✅ Optional: min/max length rule (add if needed)
+  if (username.length < 3) {
+    return "Username must be at least 3 characters long";
+  }
+  if (username.length > 20) {
+    return "Username cannot exceed 20 characters";
+  }
+
+  return null; // ✅ valid
+}
