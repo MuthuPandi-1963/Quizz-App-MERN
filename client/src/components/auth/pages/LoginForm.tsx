@@ -2,14 +2,14 @@ import type React from "react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { FiUser, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { validateEmailOrPhone, validatePassword, ValidateIsEmail, ValidateIsPhone, validateUsername } from "../../../utils/Validator";
 import { LoginThunk } from "../../../store/thunks/auth/LoginThunk";
 import type { LoginDataType } from "../../interfaces/auth";
 
 const LoginForm: React.FC = () => {
   const dispatch = useDispatch();
-
+  const navigate = useNavigate()
   const [identifier, setIdentifier] = useState(""); // username | email | phone
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -67,6 +67,10 @@ const validateForm = () => {
 
       const response = await dispatch(LoginThunk(loginData) as any);
       console.log(response.payload);
+      if(response.payload.success){
+        const {role} = response.payload.data
+        navigate(`/${role}`)
+      }
     } catch (err) {
       console.error(err);
     } finally {
