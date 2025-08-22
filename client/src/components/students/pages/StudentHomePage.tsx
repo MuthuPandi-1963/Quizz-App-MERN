@@ -1,11 +1,11 @@
 'use client'
 import { FiBook, FiTarget, FiCode, FiTrendingUp, FiPlay, FiClock, FiStar } from 'react-icons/fi'
+import { useOutletContext } from 'react-router-dom'
+import type { AuthState } from '../../../store/slices/AuthSlice'
 
-interface StudentHomePageProps {
-  studentName?: string
-}
 
-export default function StudentHomePage({ studentName = "Alex" }: StudentHomePageProps) {
+export default function StudentHomePage() {
+  const {data} = useOutletContext<AuthState>()
   const quickAccessItems = [
     {
       title: "Study Materials",
@@ -61,7 +61,7 @@ export default function StudentHomePage({ studentName = "Alex" }: StudentHomePag
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold mb-2">Welcome back, {studentName}!</h1>
+              <h1 className="text-4xl  font-bold mb-2">Welcome back,<span className='text-yellow-300 font-bold'> {data.full_name}!</span></h1>
               <p className="text-xl opacity-90">Ready to continue your learning journey?</p>
             </div>
             <div className="hidden md:block">

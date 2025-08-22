@@ -1,25 +1,31 @@
-'use client'
-
 import { useState } from 'react'
 import { FiUser, FiMail, FiMapPin, FiCalendar, FiEdit3, FiSave, FiX, FiCamera, FiAward, FiTrendingUp, FiBell, FiLock, FiGlobe } from 'react-icons/fi'
-
+import { useOutletContext } from 'react-router-dom'
+import type { AuthState } from '../../../store/slices/AuthSlice'
+import { BiLogOut } from 'react-icons/bi'
+import { FaUser } from 'react-icons/fa'
+import { Modal } from 'antd';
+import { useAppDispatch } from '../../interfaces/hook'
+import { LogoutThunk } from '../../../store/thunks/auth/LogoutThunk'
 export default function StudentProfile() {
+  const [open, setOpen] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false)
   const [activeTab, setActiveTab] = useState('profile')
-  
+  const {email,full_name,phone,country,dob,username,bio} = useOutletContext<AuthState>().data 
+  const [modalText, setModalText] = useState(`Remove Your Account ${username}`);
+  const dispatch = useAppDispatch()
   const [profileData, setProfileData] = useState({
-    fullName: 'Alex Johnson',
-    email: 'alex.johnson@student.edu',
-    phone: '+1 (555) 123-4567',
-    location: 'New York, NY',
-    dateOfBirth: '1998-05-15',
-    studentId: 'STU2024001',
-    program: 'Computer Science',
-    year: 'Junior',
+    fullName: full_name,
+    email,
+    phone : phone || "NA",
+    location:country || "NA",
+    dateOfBirth: dob,
+    studentId:username,
+    program: "",
+    year: '',
     gpa: '3.85',
-    bio: 'Passionate computer science student with interests in web development and artificial intelligence.'
-  })
-
+    bio: bio})
   const achievements = [
     { title: 'Dean\'s List', date: 'Fall 2023', icon: FiAward },
     { title: 'Coding Contest Winner', date: 'Oct 2023', icon: FiTrendingUp },
@@ -39,10 +45,31 @@ export default function StudentProfile() {
     // Here you would typically save to backend
   }
 
+  // const handleCancel = () => {
+  //   setIsEditing(false)
+  //   // Reset form data if needed
+  // }
+
+  const handleOk = async() => {
+    setModalText('The modal will be closed after two seconds');
+    setConfirmLoading(true);
+    try {
+        const res = await dispatch(LogoutThunk())
+        console.log(res.payload);
+        
+    } catch (error) {
+      console.log(error);
+      
+    }finally{
+      setConfirmLoading(false);
+      setOpen(false)
+    }
+  };
+
   const handleCancel = () => {
-    setIsEditing(false)
-    // Reset form data if needed
-  }
+    console.log('Clicked cancel button');
+    setOpen(false);
+  };
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -67,17 +94,20 @@ export default function StudentProfile() {
             
             <div className="flex-1">
               <div className="flex items-center justify-between mb-2">
-                <h2 className="text-2xl font-bold text-card-foreground">{profileData.fullName}</h2>
+                <h2 className="text-2xl font-bold text-card-foreground mr-3">{profileData.fullName}</h2>
                 <button
-                  onClick={() => setIsEditing(!isEditing)}
-                  className="flex items-center space-x-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                  onClick={() => setIsEditing((prev)=>{
+                    setActiveTab("profile")
+                    return !prev;
+                  })}
+                  className="flex items-center space-x-2 px-4 ml-2 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
                 >
-                  <FiEdit3 className="w-4 h-4" />
-                  <span>{isEditing ? 'Cancel' : 'Edit Profile'}</span>
+                  <FiEdit3 className="w-4 h-4 text-white" />
+                  <span className='text-white'>{isEditing ? 'Cancel' : 'Edit Profile'}</span>
                 </button>
               </div>
               <p className="text-muted-foreground mb-2">Student ID: {profileData.studentId}</p>
-              <p className="text-card-foreground">{profileData.program} • {profileData.year} Year</p>
+              {/* <p className="text-card-foreground">{profileData.program} • {profileData.year} Year</p> */}
               <div className="flex items-center space-x-4 mt-4">
                 <div className="flex items-center space-x-2">
                   <FiMail className="w-4 h-4 text-muted-foreground" />
@@ -187,7 +217,7 @@ export default function StudentProfile() {
                       className="w-full px-3 py-2 border border-border rounded-lg bg-input text-foreground focus:ring-2 focus:ring-ring focus:border-transparent"
                     />
                   ) : (
-                    <p className="text-card-foreground">{new Date(profileData.dateOfBirth).toLocaleDateString()}</p>
+                    <p className="text-card-foreground">{profileData.dateOfBirth ?new Date(profileData.dateOfBirth ).toLocaleDateString() : "NA"}</p>
                   )}
                 </div>
 
@@ -223,7 +253,7 @@ export default function StudentProfile() {
                   placeholder="Tell us about yourself..."
                 />
               ) : (
-                <p className="text-card-foreground leading-relaxed">{profileData.bio}</p>
+                <p className="text-card-foreground leading-relaxed">{profileData.bio ?? "NA"}</p>
               )}
             </div>
           </div>
@@ -338,6 +368,27 @@ export default function StudentProfile() {
                   </div>
                   <FiEdit3 className="w-4 h-4 text-muted-foreground" />
                 </button>
+                <button onClick={()=>setOpen(true)} className="w-full flex items-center justify-between p-4 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
+                  <div className="flex items-center space-x-3">
+                    <FaUser className="w-5 h-5 text-red-800" />
+                    <div className="text-left">
+                      <p className="font-medium text-card-foreground">Logout Account</p>
+                      <p className="text-sm text-muted-foreground">Remove your Credentials Temporarily</p>
+                    </div>
+                  </div>
+                  <BiLogOut className="w-4 h-4 text-red-800" />
+                </button>
+                <Modal
+        title={` Are You sure`}
+        
+        open={open}
+        className=''
+        onOk={handleOk}
+        confirmLoading={confirmLoading}
+        onCancel={handleCancel}
+      >
+        <p>{modalText}</p>
+      </Modal>
               </div>
             </div>
           </div>
@@ -346,3 +397,9 @@ export default function StudentProfile() {
     </div>
   )
 }
+
+
+
+
+
+

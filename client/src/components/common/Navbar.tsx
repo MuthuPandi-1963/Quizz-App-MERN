@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { FiMenu, FiX, FiBook, FiTarget, FiCode, FiUsers, FiLogIn, FiUserPlus } from "react-icons/fi"
+import { FiMenu, FiX, FiBook, FiCode, FiUsers, FiLogIn, FiUserPlus } from "react-icons/fi"
 import { Link } from "react-router-dom"
 
 interface LandingNavbarProps {
@@ -23,7 +23,6 @@ export default function Navbar({ onLoginClick, onSignupClick }: LandingNavbarPro
 
   const navItems = [
     { name: "Features", href: "#features", icon: FiBook },
-    { name: "Assessments", href: "#assessments", icon: FiTarget },
     { name: "Coding Challenges", href: "#coding", icon: FiCode },
     { name: "About Us", href: "#about", icon: FiUsers },
   ]

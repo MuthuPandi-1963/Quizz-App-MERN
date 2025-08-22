@@ -4,24 +4,17 @@ import {
   FiAward,
   FiBell,
   FiUser,
-  FiLogOut,
   FiMenu,
   FiX,
 } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import DropdownExample from "../../../utils/DropDownMenu";
 
-interface StudentNavbarProps {
-  studentName?: string;
-  onLogout?: () => void;
-  data: {role? : string | ""}
+interface StudentProps{
+  studentName : string
+  role : string
 }
-
-export default function StudentNavbar({ 
-  studentName = "Student", 
-  onLogout ,
-  data
-}: StudentNavbarProps) {
+export default function StudentNavbar({studentName,role}:StudentProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navigationItems = [
@@ -38,7 +31,7 @@ export default function StudentNavbar({
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                 <FiBook className="text-white text-lg" />
               </div>
-              <Link  to={`/${data?.role}`}className="ml-2 text-xl font-bold text-gray-900">EduPlatform</Link>
+              <Link  to={`/${role}`}className="ml-2 text-xl font-bold text-gray-900">EduPlatform</Link>
             </div>
           </div>
 
@@ -64,16 +57,16 @@ export default function StudentNavbar({
               <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full text-xs"></span>
             </button>
 
-            <div className="flex items-center space-x-2">
+            <Link to={"profile"} className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                 <FiUser className="text-blue-600" />
               </div>
               <span className="text-sm font-medium text-gray-700">{studentName}</span>
-            </div>
+            </Link>
 
-            <button onClick={onLogout} className="p-1">
+            {/* <button onClick={()=>{}} className="p-1">
               <FiLogOut className="text-lg" />
-            </button>
+            </button> */}
           </div>
 
           {/* Mobile menu button */}
@@ -107,13 +100,13 @@ export default function StudentNavbar({
               </Link>
             ))}
             <div className="border-t pt-2 mt-2">
-              <div className="flex items-center px-3 py-2">
+              <Link to={"profile"} className="flex items-center px-3 py-2">
                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
                   <FiUser className="text-blue-600" />
                 </div>
                 <span className="text-base font-medium text-gray-700">{studentName}</span>
-              </div>
-              <button 
+              </Link>
+              {/* <button 
                 className="flex items-center w-full px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md"
                 onClick={() => {
                   onLogout?.();
@@ -122,7 +115,7 @@ export default function StudentNavbar({
               >
                 <FiLogOut className="mr-3 text-lg" />
                 Logout
-              </button>
+              </button> */}
             </div>
           </div>
         </div>

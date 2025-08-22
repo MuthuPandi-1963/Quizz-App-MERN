@@ -1,10 +1,11 @@
 import { Route } from "react-router-dom";
-import AuthLayout from "../auth/layouts/AuthLayout";
-import LoginForm from "../auth/pages/LoginForm";
-import SignupForm from "../auth/pages/SignupForm";
-import OTPVerification from "../auth/pages/OTPVerification";
-import ResetPassword from "../auth/pages/ResetPassword";
+import React from "react";
 
+const AuthLayout = React.lazy(()=>import ("../auth/layouts/AuthLayout"))
+const SignupForm = React.lazy(()=>import ("../auth/pages/SignupForm"))
+const LoginForm = React.lazy(()=>import ("../auth/pages/LoginForm"))
+const OTPVerification = React.lazy(()=>import ("../auth/pages/OTPVerification"))
+const ResetPassword = React.lazy(()=>import ("../auth/pages/ResetPassword"))
 export const AuthRoutes = (
     <Route path="/auth" element={<AuthLayout/>}>
         <Route path="signup" element={<SignupForm/>}/>

@@ -3,6 +3,7 @@ import { SignupThunk } from "../thunks/auth/SignupThunk";
 import { LoginThunk } from "../thunks/auth/LoginThunk";
 import { OTPThunk } from "../thunks/auth/OTPThunk";
 import { VerifyUser } from "../thunks/auth/VerifyUser";
+import { LogoutThunk } from "../thunks/auth/LogoutThunk";
 
 export interface AuthState {
   isLoading: boolean;
@@ -57,6 +58,9 @@ const AuthSlice = createSlice({
       .addCase(VerifyUser.pending, handlePending)
       .addCase(VerifyUser.fulfilled, handleFulfilled)
       .addCase(VerifyUser.rejected, handleRejected)
+      .addCase(LogoutThunk.pending, (handlePending))
+      .addCase(LogoutThunk.fulfilled, handleFulfilled)
+      .addCase(LogoutThunk.rejected, handleRejected)
   },
 });
 
