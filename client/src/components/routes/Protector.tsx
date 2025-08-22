@@ -1,27 +1,32 @@
 import type React from "react";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
 import type { AuthState } from "../../store/slices/AuthSlice";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
-export const ProtectedRoutes: React.FC<{ auth: AuthState }> = ({ auth }) => {
-  const {
-    isLoading,
-    data: { is_verified, role },
-  } = auth;
-  const { pathname } = useLocation();
+export const ProtectedRoutes :React.FC<{auth : AuthState}> = ({auth})=>{
+  
+  
+  const {isLoading,isVerified,data:{role}} = auth
+  console.log(isLoading,isVerified,role);
+  const {pathname,...location } = useLocation()
+  console.log(pathname,location);
+  useEffect(()=>{
+    localStorage.setItem("path",pathname)
+  },[pathname])
 
-  if (isLoading) {
-    return <Outlet />;
-  }
+  if(isLoading) return null;
 
-  if (!is_verified) {
-    return <Navigate to="/auth/login" replace />;
-  }
+  if (!isVerified) {
+  return <Navigate to="/" />;
+}
 
-  // Allow anything under the role path (e.g., /student/*, /admin/*, /staff/*)
+if (!pathname.includes(role)) {
+  console.log("ok");
+  
+  return <Navigate to={`/${role}`} />;
+}
 
-  if (!pathname.startsWith(`/${role}`)) {
-    return <Navigate to={`/${role}`} replace />;
-  }
+  
+  return <Outlet/>
 
-  return <Outlet />;
-};
+}

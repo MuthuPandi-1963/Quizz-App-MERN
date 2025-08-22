@@ -1,4 +1,4 @@
-import { Navigate, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { AdminRoutes } from "./components/routes/Admin";
 import { StaffRoutes } from "./components/routes/Staff";
 import { StudentRoutes } from "./components/routes/Student";
@@ -11,10 +11,12 @@ import { useMsg } from "./store/context/MsgContext";
 import type { AuthState } from "./store/slices/AuthSlice";
 import { Suspense } from "react";
 import { Loader } from "./utils/form/Loader";
+import { ProtectedRoutes } from "./components/routes/Protector";
+import Mover from "./components/routes/Mover";
 
 export default function App() {
   const dispatch = useAppDispatch();
-  const {isVerified,isLoading , data}: AuthState = useAppSelector((state) => state.auth);
+  const { isVerified, isLoading, data ,...bal }: AuthState = useAppSelector((state) => state.auth);
   const { showMessage, destroyMessage } = useMsg();
 
   useEffect(() => {
@@ -31,23 +33,29 @@ export default function App() {
     } else {
       destroyMessage();
     }
-  }, [isLoading, showMessage, destroyMessage]);
+  }, [ showMessage, destroyMessage]);
 
-  if (isLoading) return <Loader/>
-
+  if (isLoading) return <Loader />
   
 
 
-return (
-  <Suspense fallback={<Loader/>}>
-    <Routes>
-      {CommonRoutes}
-      {AuthRoutes}
-      {AdminRoutes}
-      {StaffRoutes}
-      {StudentRoutes}
-    </Routes>
-  </Suspense>
-);
+
+  return (
+    <Suspense fallback={<Loader />}>
+      <Routes>
+        <Route element={<Mover auth={{isLoading,isVerified,data,...bal}}/>}>
+        {CommonRoutes}
+        {AuthRoutes}
+        </Route>
+        <Route element={<ProtectedRoutes auth={{isLoading,isVerified,data,...bal}}/>}>
+        {AdminRoutes}
+        {StaffRoutes}
+        {StudentRoutes}
+        </Route>
+      </Routes>
+
+
+    </Suspense>
+  );
 
 }

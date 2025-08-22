@@ -1,34 +1,32 @@
-import { useState } from "react"
+import { useState } from "react";
 import {
   FiBook,
-  FiFileText,
-  FiCode,
-  FiTrendingUp,
   FiAward,
-  FiMessageCircle,
   FiBell,
   FiUser,
   FiLogOut,
   FiMenu,
   FiX,
-} from "react-icons/fi"
+} from "react-icons/fi";
+import { Link } from "react-router-dom";
+import DropdownExample from "../../../utils/DropDownMenu";
 
 interface StudentNavbarProps {
-  studentName?: string
-  onLogout?: () => void
+  studentName?: string;
+  onLogout?: () => void;
+  data: {role? : string | ""}
 }
 
-export default function StudentNavbar({ studentName = "Student", onLogout }: StudentNavbarProps) {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+export default function StudentNavbar({ 
+  studentName = "Student", 
+  onLogout ,
+  data
+}: StudentNavbarProps) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navigationItems = [
-    { icon: FiBook, label: "Study Materials", href: "/student/materials" },
-    { icon: FiFileText, label: "Aptitude Quiz", href: "/student/aptitude" },
-    { icon: FiCode, label: "Coding Challenges", href: "/student/coding" },
-    { icon: FiTrendingUp, label: "Results & Progress", href: "/student/results" },
-    { icon: FiAward, label: "Leaderboard", href: "/student/leaderboard" },
-    { icon: FiMessageCircle, label: "Ask Doubts", href: "/student/doubts" },
-  ]
+    { icon: FiAward, label: "Dashboard", href: "/student/dashboard" },
+  ];
 
   return (
     <nav className="bg-white shadow-lg border-b">
@@ -40,27 +38,28 @@ export default function StudentNavbar({ studentName = "Student", onLogout }: Stu
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                 <FiBook className="text-white text-lg" />
               </div>
-              <span className="ml-2 text-xl font-bold text-gray-900">EduPlatform</span>
+              <Link  to={`/${data?.role}`}className="ml-2 text-xl font-bold text-gray-900">EduPlatform</Link>
             </div>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">
+            <DropdownExample />
             {navigationItems.map((item) => (
-              <a
+              <Link
                 key={item.label}
-                href={item.href}
+                to={item.href}
                 className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
               >
                 <item.icon className="mr-2 text-lg" />
                 {item.label}
-              </a>
+              </Link>
             ))}
           </div>
 
           {/* User Menu */}
-          <div className="hidden md:flex items-center space-x-4">
-            <button className="relative">
+          <div className="hidden md:flex items-center gap-x-4">
+            <button className="relative p-1">
               <FiBell className="text-lg" />
               <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full text-xs"></span>
             </button>
@@ -72,14 +71,17 @@ export default function StudentNavbar({ studentName = "Student", onLogout }: Stu
               <span className="text-sm font-medium text-gray-700">{studentName}</span>
             </div>
 
-            <button onClick={onLogout}>
+            <button onClick={onLogout} className="p-1">
               <FiLogOut className="text-lg" />
             </button>
           </div>
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center">
-            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2"
+            >
               {isMobileMenuOpen ? <FiX className="text-xl" /> : <FiMenu className="text-xl" />}
             </button>
           </div>
@@ -90,15 +92,19 @@ export default function StudentNavbar({ studentName = "Student", onLogout }: Stu
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white border-t">
           <div className="px-2 pt-2 pb-3 space-y-1">
+            <div className="px-3 py-2">
+              <DropdownExample />
+            </div>
             {navigationItems.map((item) => (
-              <a
+              <Link
                 key={item.label}
-                href={item.href}
+                to={item.href}
                 className="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50"
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 <item.icon className="mr-3 text-lg" />
                 {item.label}
-              </a>
+              </Link>
             ))}
             <div className="border-t pt-2 mt-2">
               <div className="flex items-center px-3 py-2">
@@ -107,7 +113,13 @@ export default function StudentNavbar({ studentName = "Student", onLogout }: Stu
                 </div>
                 <span className="text-base font-medium text-gray-700">{studentName}</span>
               </div>
-              <button className="w-full justify-start px-3 py-2" onClick={onLogout}>
+              <button 
+                className="flex items-center w-full px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md"
+                onClick={() => {
+                  onLogout?.();
+                  setIsMobileMenuOpen(false);
+                }}
+              >
                 <FiLogOut className="mr-3 text-lg" />
                 Logout
               </button>
@@ -116,5 +128,5 @@ export default function StudentNavbar({ studentName = "Student", onLogout }: Stu
         </div>
       )}
     </nav>
-  )
+  );
 }

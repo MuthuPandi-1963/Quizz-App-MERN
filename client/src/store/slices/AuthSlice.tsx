@@ -31,7 +31,7 @@ const handleFulfilled = (state: AuthState, action: any) => {
   state.success = true;
   state.message = action.payload?.message || "Signup successful";
   state.data = action.payload?.data || {};
-  state.isVerified = action.payload.data.is_verified || false;
+  state.isVerified = action.payload.data?.is_verified || false;
 }
 const handleRejected = (state: AuthState, action: any) => {
   state.isLoading = false;
