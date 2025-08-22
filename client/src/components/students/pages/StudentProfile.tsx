@@ -55,10 +55,9 @@ export default function StudentProfile() {
     setConfirmLoading(true);
     try {
         const res = await dispatch(LogoutThunk())
-        console.log(res.payload);
-        
+        res.payload
     } catch (error) {
-      console.log(error);
+      return error;
       
     }finally{
       setConfirmLoading(false);
@@ -67,7 +66,6 @@ export default function StudentProfile() {
   };
 
   const handleCancel = () => {
-    console.log('Clicked cancel button');
     setOpen(false);
   };
 

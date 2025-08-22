@@ -43,12 +43,8 @@ const SignupForm: React.FC = () => {
       const SignupData :SignupDataType = {full_name:fullName,password}
       if(ValidateIsEmail(emailOrPhone)) SignupData.email = emailOrPhone
       if(ValidateIsPhone(emailOrPhone)) SignupData.phone = emailOrPhone
-      console.log(SignupData);
       const response = await dispatch(SignupThunk(SignupData));
-      console.log(response.payload);
-      if(response.payload.success){
-        console.log("hsdkfhdskfhk");
-        
+      if(response.payload.success){        
         navigate("/auth/otp")
       }
       

@@ -63,10 +63,8 @@ const validateForm = () => {
         loginData.username = identifier;
       }
 
-      console.log("LoginData:", loginData);
 
       const response = await dispatch(LoginThunk(loginData) as any);
-      console.log(response.payload);
       if(response.payload.success){
         const {role} = response.payload.data
         navigate(`/${role}`)

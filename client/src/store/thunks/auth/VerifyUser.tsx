@@ -7,7 +7,6 @@ export const VerifyUser = createAsyncThunk("auth/verify_user",
     async (_,{rejectWithValue})=>{
         try {
             const response = await AxiosInstance.get("/auth/verify_user")
-            console.log(response.data);
             return response.data;
             
         }catch (error: any) {

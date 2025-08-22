@@ -22,14 +22,11 @@ export default function OTPVerification() {
 
     const onVerify = (otp: string) => {
         const OTPData  : OTPDataType = {id,otp,email ,phone}
-        console.log(OTPData);
         
         dispatch(OTPThunk({ otp, email, phone ,id })) 
     }
 
     const onResend = () => {
-        // Optionally dispatch a resend thunk
-        console.log("Resend OTP triggered")
     }
 
     const handleChange = (index: number, value: string) => {

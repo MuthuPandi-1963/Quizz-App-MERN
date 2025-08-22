@@ -7,9 +7,7 @@ export const ProtectedRoutes :React.FC<{auth : AuthState}> = ({auth})=>{
   
   
   const {isLoading,isVerified,data:{role}} = auth
-  console.log(isLoading,isVerified,role);
   const {pathname,...location } = useLocation()
-  console.log(pathname,location);
   useEffect(()=>{
     localStorage.setItem("path",pathname)
   },[pathname])
@@ -21,7 +19,6 @@ export const ProtectedRoutes :React.FC<{auth : AuthState}> = ({auth})=>{
 }
 
 if (!pathname.includes(role)) {
-  console.log("ok");
   
   return <Navigate to={`/${role}`} />;
 }

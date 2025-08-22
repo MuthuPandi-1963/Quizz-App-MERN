@@ -8,11 +8,9 @@ export const LoginThunk = createAsyncThunk("auth/login",
     async (formdata : LoginDataType ,{rejectWithValue})=>{
         try {
             const response = await AxiosInstance.post("/auth/login",formdata)
-            console.log(response.data);
             return response.data;
             
         } catch (error) {
-            console.log(error);
             return rejectWithValue(error)
             
         }

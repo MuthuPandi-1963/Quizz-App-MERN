@@ -106,7 +106,8 @@ const DropdownExample: React.FC = () => {
   ];
 
   const handleItemClick = (key: string, href: string) => {
-    console.log(`Item ${key} clicked, navigating to: ${href}`);
+    key ;
+    href;
     // You can add navigation logic here (e.g., using react-router)
   };
 

@@ -8,7 +8,6 @@ export const OTPThunk = createAsyncThunk("auth/otp",
     async (formdata : OTPDataType ,{rejectWithValue})=>{
         try {
             const response = await AxiosInstance.post("/auth/verify_otp",formdata)
-            console.log(response.data);
             return response.data;
             
         }catch (error: any) {

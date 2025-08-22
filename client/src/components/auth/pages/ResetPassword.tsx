@@ -13,8 +13,7 @@ export default function ResetPassword() {
   const [errors, setErrors] = useState<{ email?: string }>({})
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isSuccess, setIsSuccess] = useState<boolean>(false)
-  const onSubmit = (email : string)=>{console.log(email);setIsLoading(prev=>!prev);setIsSuccess(prev=>prev)
-  }
+  const onSubmit = (email : string)=>{setIsLoading(prev=>!prev);setIsSuccess(prev=>prev);email}
   const validateForm = () => {
     const newErrors: { email?: string } = {}
 
