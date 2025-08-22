@@ -1,10 +1,10 @@
 import React from 'react'
 import type { AuthState } from '../../store/slices/AuthSlice'
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 
 const Mover : React.FC<{auth:AuthState}> = ({auth})=> {
-    const {isLoading,isVerified,data:{role}} = auth
-  const {pathname,...location } = useLocation()
+    const {isVerified,data:{role}} = auth
+  // const {pathname } = useLocation()
   if(isVerified){
     return <Navigate to={`/${role ?? ""}`} replace />
   }

@@ -7,7 +7,7 @@ export const ProtectedRoutes :React.FC<{auth : AuthState}> = ({auth})=>{
   
   
   const {isLoading,isVerified,data:{role}} = auth
-  const {pathname,...location } = useLocation()
+  const {pathname} = useLocation()
   useEffect(()=>{
     localStorage.setItem("path",pathname)
   },[pathname])

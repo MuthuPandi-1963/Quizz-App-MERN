@@ -23,7 +23,7 @@ export default function OTPVerification() {
     const onVerify = (otp: string) => {
         const OTPData  : OTPDataType = {id,otp,email ,phone}
         
-        dispatch(OTPThunk({ otp, email, phone ,id })) 
+        dispatch(OTPThunk(OTPData)) 
     }
 
     const onResend = () => {
