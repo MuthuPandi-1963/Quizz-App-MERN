@@ -1,0 +1,180 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Auth {
+  id            String          @id @default(uuid()) @db.Uuid
+  email         String?         @unique
+  phone         String?         @unique
+  username      String          @unique
+  password      String
+  is_active     Boolean         @default(false)
+  is_verified   Boolean         @default(false)
+  provider      String          @default("normal")
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @updatedAt
+  devices       DeviceInfo[]
+  logs          LogHistory[]
+  mfa_linked    MfaLinked[]
+  otps          Otp[]
+  profile       Profile?
+  tokens        Token[]
+  roles         UserRole[]
+  coin          coin?
+  coins_history coins_history[]
+}
+
+model Profile {
+  user_id    String    @id @db.Uuid
+  full_name  String?
+  dob        DateTime?
+  avatar_url String?
+  bio        String?
+  country    String?
+  created_at DateTime  @default(now())
+  user       Auth      @relation(fields: [user_id], references: [id])
+}
+
+model Otp {
+  id         String   @id @default(uuid()) @db.Uuid
+  user_id    String   @db.Uuid
+  type       String
+  code       String
+  status     String
+  expires_at DateTime
+  created_at DateTime @default(now())
+  user       Auth     @relation(fields: [user_id], references: [id])
+}
+
+model Token {
+  id            String    @id @default(uuid()) @db.Uuid
+  user_id       String    @db.Uuid
+  access_jti    String    @db.Uuid
+  refresh_token String
+  device_id     String    @db.Uuid
+  expires_at    DateTime
+  revoked_at    DateTime?
+  reason        String?
+  created_at    DateTime  @default(now())
+  user          Auth      @relation(fields: [user_id], references: [id])
+}
+
+model Roles {
+  id          String     @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  users       UserRole[]
+}
+
+model UserRole {
+  user_id     String   @db.Uuid
+  role_id     String   @db.Uuid
+  assigned_at DateTime @default(now())
+  role        Roles    @relation(fields: [role_id], references: [id])
+  user        Auth     @relation(fields: [user_id], references: [id])
+
+  @@id([user_id, role_id])
+}
+
+model MfaLinked {
+  id          String    @id @default(uuid()) @db.Uuid
+  user_id     String    @db.Uuid
+  method      String
+  secret_hash String
+  last_used   DateTime?
+  is_active   Boolean
+  user        Auth      @relation(fields: [user_id], references: [id])
+}
+
+model DeviceInfo {
+  id          String   @id @default(uuid()) @db.Uuid
+  user_id     String   @db.Uuid
+  device_name String
+  ip_address  String
+  user_agent  String
+  location    String
+  is_active   Boolean
+  trusted     Boolean
+  last_seen   DateTime
+  user        Auth     @relation(fields: [user_id], references: [id])
+}
+
+model LogHistory {
+  id          String   @id @default(uuid()) @db.Uuid
+  user_id     String   @db.Uuid
+  action      String
+  description String?
+  ip_address  String
+  user_agent  String
+  created_at  DateTime @default(now())
+  user        Auth     @relation(fields: [user_id], references: [id])
+}
+
+model aptitude {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String      @unique @db.VarChar(255)
+  description String?
+  image       String?
+  created_at  DateTime    @default(now()) @db.Timestamp(6)
+  updated_at  DateTime    @default(now()) @db.Timestamp(6)
+  category_id String?     @db.Uuid
+  category    category?   @relation(fields: [category_id], references: [id], onUpdate: NoAction)
+  questions   questions[]
+
+  @@index([id, name], map: "aptitude_index_id_name")
+}
+
+model category {
+  id            String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String          @unique @db.VarChar(255)
+  description   String?
+  created_at    DateTime        @default(now()) @db.Timestamp(6)
+  updated_at    DateTime        @default(now()) @db.Timestamp(6)
+  aptitude      aptitude[]
+  coins_history coins_history[]
+
+  @@index([id], map: "category_index_id")
+  @@index([name], map: "category_index_name")
+}
+
+model questions {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  aptitude_id String   @db.Uuid
+  question    String
+  options     String[]
+  answer      String
+  explanation String
+  created_at  DateTime @default(now()) @db.Timestamp(6)
+  updated_at  DateTime @default(now()) @db.Timestamp(6)
+  aptitude    aptitude @relation(fields: [aptitude_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([aptitude_id], map: "questions_index_aptitude_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model coin {
+  id         String    @id @default(dbgenerated("auth.uid()")) @db.Uuid
+  updated_at DateTime? @default(now()) @db.Timestamp(6)
+  coins      BigInt    @default(0)
+  Auth       Auth      @relation(fields: [id], references: [id], onDelete: Cascade)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model coins_history {
+  id         String   @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  user_id    String   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  from       String   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  content    String?
+  topic      String?
+  category   category @relation(fields: [from], references: [id], onDelete: Cascade)
+  Auth       Auth     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("coins history")
+}

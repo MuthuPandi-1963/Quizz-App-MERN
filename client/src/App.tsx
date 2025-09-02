@@ -11,7 +11,6 @@ import { useMsg } from "./store/context/MsgContext";
 import type { AuthState } from "./store/slices/AuthSlice";
 import { Suspense } from "react";
 import { Loader } from "./utils/form/Loader";
-import { ProtectedRoutes } from "./components/routes/Protector";
 import Mover from "./components/routes/Mover";
 
 export default function App() {
@@ -35,7 +34,7 @@ export default function App() {
     }
   }, [ showMessage, destroyMessage]);
 
-  if (isLoading) return <Loader />
+  // if (isLoading) return <Loader />
   
 
 
@@ -47,11 +46,11 @@ export default function App() {
         {CommonRoutes}
         {AuthRoutes}
         </Route>
-        <Route element={<ProtectedRoutes auth={{isLoading,isVerified,data,...bal}}/>}>
+        {/* <Route element={<ProtectedRoutes auth={{isLoading,isVerified,data,...bal}}/>}> */}
         {AdminRoutes}
         {StaffRoutes}
         {StudentRoutes}
-        </Route>
+        {/* </Route> */}
       </Routes>
 
 
